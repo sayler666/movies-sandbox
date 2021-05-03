@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Movies</string>
+    <string name="title_top_rated">Top Rated</string>
+    <string name="title_favourites">Favourites</string>
+</resources>

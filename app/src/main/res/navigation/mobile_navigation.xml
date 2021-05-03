@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@+id/navigation_top_rated">
+
+    <fragment
+        android:id="@+id/navigation_top_rated"
+        android:name="com.sayler666.movies.ui.toprated.TopRatedFragment"
+        android:label="@string/title_top_rated"
+        tools:layout="@layout/favourites_fragment">
+        <action
+            android:id="@+id/action_navigation_top_rated_to_navigation_details"
+            app:destination="@id/navigation_details" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_favourites"
+        android:name="com.sayler666.movies.ui.favourites.FavouritesFragment"
+        android:label="@string/title_favourites"
+        tools:layout="@layout/top_rated_fragment">
+        <action
+            android:id="@+id/action_navigation_favourites_to_navigation_details"
+            app:destination="@id/navigation_details" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_details"
+        android:name="com.sayler666.movies.ui.details.DetailsFragment"
+        tools:layout="@layout/details_fragment">
+        <argument
+            android:name="movieId"
+            app:argType="integer" />
+    </fragment>
+
+</navigation>
