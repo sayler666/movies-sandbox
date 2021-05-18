@@ -7,7 +7,7 @@ import com.sayler666.movies.db.MovieDb
 import com.sayler666.movies.db.MoviesDao
 import common.MainCoroutinesRule
 import io.mockk.MockKAnnotations
-import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -42,7 +42,7 @@ class MoviesRepositoryTest {
     @Test
     fun getMovieByIdFlow() = runBlocking {
         val movie = MovieDb(1, "title", "url", "overview", false)
-        coEvery { moviesDao.getMovieByIdFlow(eq(1)) } returns flow { emit(movie) }
+        every { moviesDao.getMovieByIdFlow(eq(1)) } returns flow { emit(movie) }
 
         val flow = repository.getMovieById(1)
 

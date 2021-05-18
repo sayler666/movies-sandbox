@@ -8,14 +8,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.getDrawable
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.Lifecycle.State.STARTED
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import coil.load
 import com.sayler666.movies.R
 import com.sayler666.movies.databinding.DetailsFragmentBinding
 import com.sayler666.movies.db.MovieDb
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class DetailsFragment : Fragment() {
 
@@ -29,7 +35,7 @@ class DetailsFragment : Fragment() {
 
     private val toolbar by lazy { (requireActivity() as AppCompatActivity).supportActionBar }
 
-    private val movieObserver = Observer<MovieDb> { movie ->
+    private val movieObserver = { movie: MovieDb ->
         with(binding) {
             poster.load(movie.imgUrl)
             toolbar?.setTitle(movie.title)
@@ -55,7 +61,13 @@ class DetailsFragment : Fragment() {
     }
 
     private fun setupObservers() = with(viewModel) {
-        movie.observe(viewLifecycleOwner, movieObserver)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(STARTED) {
+                movie.collect { movie ->
+                    movie?.let { movieObserver(it) }
+                }
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

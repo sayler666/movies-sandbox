@@ -6,15 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.sayler666.movies.R
 import com.sayler666.movies.databinding.FavouritesFragmentBinding
-import com.sayler666.movies.db.MovieDb
 import com.sayler666.movies.ui.toprated.MovieAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
+@InternalCoroutinesApi
 @AndroidEntryPoint
 class FavouritesFragment : Fragment() {
 
@@ -27,10 +32,6 @@ class FavouritesFragment : Fragment() {
         MovieAdapter { movieId ->
             findNavController().navigate(FavouritesFragmentDirections.actionNavigationFavouritesToNavigationDetails(movieId))
         }
-    }
-
-    private val favouritesObserver = Observer<List<MovieDb>> { movies ->
-        adapter.submitList(movies)
     }
 
     override fun onCreateView(
@@ -49,7 +50,13 @@ class FavouritesFragment : Fragment() {
         setupObservers()
     }
 
-    private fun setupObservers() = with(viewModel) {
-        favourites.observe(viewLifecycleOwner, favouritesObserver)
+    private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.favourites.collect { movies ->
+                    adapter.submitList(movies)
+                }
+            }
+        }
     }
 }
